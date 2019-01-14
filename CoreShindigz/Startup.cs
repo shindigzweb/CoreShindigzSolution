@@ -36,7 +36,7 @@ namespace CoreShindigz
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("ASP1")));
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -64,7 +64,13 @@ namespace CoreShindigz
 
             app.UseAuthentication();
 
-            app.UseMvc();
+            app.UseMvc(routes =>
+                {
+                    routes.MapRoute(name: "areaRoute", template: "{area:exists}/{controller=Home}/{action=Index}/{Id?}");
+
+                    routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{Id?}");
+                }
+            );
         }
     }
 }
