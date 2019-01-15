@@ -7,15 +7,26 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
 {
     public class InstructionSheet
     {
-        private const string FolderPath = "";
-        public string Filename { get; set; }
+        public static string FolderPath = @"\\southprod2\InstSheets";
+        public string FileName { get; set; }
         public string Ext { get; set; }
         public string UNCpath
         {
             get
             {
-                return $@"{FolderPath}/{this.Filename}.{this.Ext}";
+                return $@"{FolderPath}\{this.FileName}";
             }
+        }
+
+        public InstructionSheet() : this("")
+        {
+            
+        }
+
+        public InstructionSheet(string filename = "")
+        {
+            FileName = filename;
+            Ext = "pdf";
         }
     }
 }
