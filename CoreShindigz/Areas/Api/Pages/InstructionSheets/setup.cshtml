@@ -1,18 +1,18 @@
 ﻿@page
 @model CoreShindigz.Areas.Api.Pages.InstructionSheets.SetupModel
+
 @{
     Layout = "_Layout";
 }
 
 
-<h2>  Listing of directory content</h2>
+<h2>  Listing of directory: @Model.DirectoryName</h2>
 
-<text>dump model here</text>
-@Model._filenames.Length  <br />
+@Model._filenames.Length files found <br />
 
 @foreach(var sheet in Model.InstructionSheets)
 {
     @sheet.FileName <br>
 }
 
-@Model.Sheet1.FileName: @Model.Sheet1.UNCpath
+

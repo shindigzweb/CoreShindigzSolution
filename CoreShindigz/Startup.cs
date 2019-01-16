@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using CoreShindigz.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using CoreShindigz.Areas.Api.Pages.InstructionSheets.Models;
 
 namespace CoreShindigz
 {
@@ -26,7 +27,8 @@ namespace CoreShindigz
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
+        {   services.AddSingleton(Configuration);
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -34,12 +36,11 @@ namespace CoreShindigz
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("ASP1")));
-            services.AddDefaultIdentity<IdentityUser>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddDbContext<ApplicationDbContext>(options =>  options.UseSqlServer( Configuration.GetConnectionString("ASP1")));
 
+            services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddTransient<InstructionSheetRepository>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
@@ -66,9 +67,9 @@ namespace CoreShindigz
 
             app.UseMvc(routes =>
                 {
-                    routes.MapRoute(name: "areaRoute", template: "{area:exists}/{controller=Home}/{action=Index}/{Id?}");
+                    routes.MapRoute(name: "default", template: "{area:exists}/{controller=Home}/{action=Index}/{Id?}");
 
-                    routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{Id?}");
+                    // routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{Id?}");
                 }
             );
         }
