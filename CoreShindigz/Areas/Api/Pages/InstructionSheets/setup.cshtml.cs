@@ -12,10 +12,8 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets
     
     public class SetupModel : PageModel
     {
-        public InstructionSheet Sheet1 { get; set; }
-        public string[] _filenames { get; set; }
         public List<InstructionSheet> InstructionSheets { get; set; } = new List<InstructionSheet>();
-        public string DirectoryName { get; set; } = InstructionSheet.FolderPath;
+        public string DirectoryName { get; set; }
         private InstructionSheetRepository _repo;
 
         public SetupModel(InstructionSheetRepository repo)
@@ -25,12 +23,9 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets
 
         public void OnGet()
         {
-            _filenames = Directory.GetFiles(InstructionSheet.FolderPath, "*.pdf", SearchOption.TopDirectoryOnly);
-
-            foreach(var filename in _filenames)
-            {
-                InstructionSheets.Add( new InstructionSheet() { FileName = Path.GetFileName(filename) } );
-            }
+            
+            InstructionSheets = _repo.GetFolderListings();
+            DirectoryName = _repo.FolderPath;
 
             foreach (var instsheet in InstructionSheets)
             {

@@ -1,7 +1,21 @@
-﻿@page "~/helloworld"
+﻿@page "{handler?}/{token?}"
 @model CoreShindigz.Areas.Api.Pages.InstructionSheets.IndexModel
 @*
     For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 *@
 
-<h2>Now on api/instructionsheets/index</h2>
+@{ 
+    Layout = "_Layout";
+}
+
+<h2>Instruction Sheets</h2>
+
+Folder: @Model.FolderLocation <br />
+
+<ul>
+       @foreach(var instructionSheet in Model.InstructionSheets)
+       {
+           <li><a href="/api/instructionsheets/download/@instructionSheet.FileName">@instructionSheet.FileName.@instructionSheet.Ext</a></li>
+       }
+
+</ul>

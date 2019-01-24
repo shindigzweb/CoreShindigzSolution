@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Mvc;
 using Dapper;
 
 namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
@@ -18,6 +19,7 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
         private IConfiguration _configuration;
         private string _connStringASP1;
         private string _connStringEDW;
+        public string FolderPath { get; set; } = @"\\southprod2\InstSheets";
 
         /// <summary>
         /// Constructor initializes 2 connection strings for ASP1 and EcometryDataWarehouse
@@ -52,11 +54,11 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
         /// <summary>
         /// Returns the filename for a given itemno
         /// </summary>
-        /// <param name="itemno"></param>
+        /// <param name="itemno">The ecometry item number to find a filename for</param>
         /// <returns>String filename</returns>
         public string GetFileNameForItem(string itemno)
         {
-            var Sql = $"SELECT INSTRSHEETFILENAME FROM ITEMMASTPLUS WHERE ITEMNO = {itemno}";
+            var Sql = $"SELECT INSTRSHEETFILENAME FROM ITEMMASTPLUS WHERE ITEMNO = '{itemno}'";
 
             using(SqlConnection conn = new SqlConnection(_connStringEDW))
             {
@@ -64,5 +66,63 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
             }
         }
 
+        /// <summary>
+        /// Lists the content of the InstructionSheet Folder Location
+        /// </summary>
+        /// <returns> a List<InstructionSheet></returns>
+        public List<InstructionSheet> GetFolderListings()
+        {
+            var instructionSheets = new List<InstructionSheet>();
+
+            string[] listings = Directory.GetFiles(FolderPath, "*.pdf", SearchOption.TopDirectoryOnly);
+
+            foreach(var filename in listings)
+            {
+                instructionSheets.Add(new InstructionSheet(Path.GetFileNameWithoutExtension(filename)));
+            }
+
+            return instructionSheets;
+        }
+
+        /// <summary>
+        /// Reeads the file from the network
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public FileContentResult GetFile(string filename)
+        {
+            string fileUNC = $@"{FolderPath}\{filename}";
+
+            var bytes = System.IO.File.ReadAllBytes(fileUNC);
+
+            return new FileContentResult(bytes, GetContentType(filename));
+        }
+
+        /// <summary>
+        /// Utility method for setting mime type on download
+        /// </summary>
+        /// <param name="path">Any string representing path to a file (can be just the filename itself</param>
+        /// <returns>the mime type for the extension</returns>
+        public static string GetContentType(string path)
+        {
+            var types = new Dictionary<string, string>
+            {
+                {".txt", "text/plain"},
+                {".pdf", "application/pdf"},
+                {".doc", "application/vnd.ms-word"},
+                {".docx", "application/vnd.ms-word"},
+                {".xls", "application/vnd.ms-excel"},
+                {".xlsx", "application/vnd.openxmlformats officedocument.spreadsheetml.sheet"},
+                {".png", "image/png"},
+                {".jpg", "image/jpeg"},
+                {".jpeg", "image/jpeg"},
+                {".gif", "image/gif"},
+                {".csv", "text/csv"}
+            };
+
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+
+            return types[ext];
+        }
     }
 }

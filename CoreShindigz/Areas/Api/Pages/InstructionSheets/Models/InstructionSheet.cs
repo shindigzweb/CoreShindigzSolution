@@ -8,16 +8,9 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
 {
     public class InstructionSheet
     {
-        public static string FolderPath = @"\\southprod2\InstSheets";
         public string FileName { get; set; }
         public string Ext { get; set; }
-        public string UNCpath
-        {
-            get
-            {
-                return $@"{FolderPath}\{this.FileName}";
-            }
-        }
+        
 
         public InstructionSheet() : this("")
         {
@@ -29,5 +22,7 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
             FileName = filename;
             Ext = "pdf";
         }
+
+        
     }
 }
