@@ -45,15 +45,23 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets
 
         //    return File(memory, InstructionSheet.GetContentType(path), $"Instructions for {itemno}");
         //}
-
         public IActionResult OnGetDownload(string token)
         {
             if (token == null)
                 return Content("itemno not defined");
 
-            string filename = _repo.GetFileNameForItem(token);
+            //convert the token back to itemno
+            var result = TokenManager.DecodeToken(token);
 
-            return _repo.GetFile(filename);
+            if (result.IsLegit)
+            {
+                string filename = _repo.GetFileNameForItem(result.ItemNo);
+
+               if(filename != null)
+                    return _repo.GetFile(filename);
+            }
+
+            return NotFound();
         }
 
 

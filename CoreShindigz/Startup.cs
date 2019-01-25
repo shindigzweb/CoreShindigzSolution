@@ -37,11 +37,9 @@ namespace CoreShindigz
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>  options.UseSqlServer( Configuration.GetConnectionString("ASP1")));
-
             services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
-
+            services.AddSingleton<TokenManager>();
             services.AddTransient<InstructionSheetRepository>();
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 

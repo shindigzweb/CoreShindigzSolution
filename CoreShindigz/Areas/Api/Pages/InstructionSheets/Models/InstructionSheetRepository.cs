@@ -62,7 +62,7 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
 
             using(SqlConnection conn = new SqlConnection(_connStringEDW))
             {
-                return conn.QuerySingle<string>(Sql);
+                return conn.QuerySingleOrDefault<string>(Sql);
             }
         }
 
@@ -85,10 +85,10 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
         }
 
         /// <summary>
-        /// Reeads the file from the network
+        /// Reads the file from the network
         /// </summary>
         /// <param name="filename"></param>
-        /// <returns></returns>
+        /// <returns>FileContentResult</returns>
         public FileContentResult GetFile(string filename)
         {
             string fileUNC = $@"{FolderPath}\{filename}";

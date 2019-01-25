@@ -1,21 +1,34 @@
 ﻿@page "{handler?}/{token?}"
 @model CoreShindigz.Areas.Api.Pages.InstructionSheets.IndexModel
+@using CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
 @*
     For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 *@
 
 @{ 
     Layout = "_Layout";
+
+    string cryptostring = TokenManager.EncodeToken("IOZ", "KC1234", "Z1234567", "46804");
+
+    var result = TokenManager.DecodeToken(cryptostring);
+
+    string cryptotemp;
+
+
 }
 
 <h2>Instruction Sheets</h2>
 
+
 Folder: @Model.FolderLocation <br />
 
 <ul>
-       @foreach(var instructionSheet in Model.InstructionSheets)
+       @foreach (var instructionSheet in Model.InstructionSheets)
        {
-           <li><a href="/api/instructionsheets/download/@instructionSheet.FileName">@instructionSheet.FileName.@instructionSheet.Ext</a></li>
+           
+            cryptotemp = TokenManager.EncodeToken("IXX", instructionSheet.FileName);
+           
+           <li>@instructionSheet.FileName.@instructionSheet.Ext = <a target="_new)" href="/api/instructionsheets/download/@cryptotemp"> @cryptotemp  </a></li>
        }
 
 </ul>
