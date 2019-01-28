@@ -12,7 +12,6 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets
 {
     public class IndexModel : PageModel
     {
-        
         public IndexModel(InstructionSheetRepository repo)
         {
             _repo = repo;
@@ -48,22 +47,25 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets
         public IActionResult OnGetDownload(string token)
         {
             if (token == null)
-                return Content("itemno not defined");
+                return NotFound();
 
-            //convert the token back to itemno
+            //convert the token back to values
             var result = TokenManager.DecodeToken(token);
 
-            if (result.IsLegit)
+            if (result.FormatOk)
             {
-                string filename = _repo.GetFileNameForItem(result.ItemNo);
+                bool isVerified = _repo.VerifyTokenValues(result.ItemNo, result.OrderNo, result.PostalCode);
 
-               if(filename != null)
+                if (isVerified)
+                {
+                    string filename = _repo.GetFileNameForItem(result.ItemNo);
+
+                    if(filename != null)
                     return _repo.GetFile(filename);
+                }
             }
 
             return NotFound();
         }
-
-
     }
 }

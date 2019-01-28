@@ -10,10 +10,10 @@ using Dapper;
 
 namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
 {
-        /// <summary>
-        /// The Instruction Sheet Repository
-        /// Handles all the communication from code to file system and database
-        /// </summary>
+    /// <summary>
+    /// The Instruction Sheet Repository
+    /// Handles all the communication from code to file system and database
+    /// </summary>
     public class InstructionSheetRepository
     {
         private IConfiguration _configuration;
@@ -29,7 +29,7 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
         {
             _configuration = configuration;
             _connStringASP1 = configuration.GetConnectionString("ASP1");
-            _connStringEDW  = configuration.GetConnectionString("EcometryDataWarehouse");
+            _connStringEDW = configuration.GetConnectionString("EcometryDataWarehouse");
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
         {
             var Sql = $"SELECT INSTRSHEETFILENAME FROM ITEMMASTPLUS WHERE ITEMNO = '{itemno}'";
 
-            using(SqlConnection conn = new SqlConnection(_connStringEDW))
+            using (SqlConnection conn = new SqlConnection(_connStringEDW))
             {
                 return conn.QuerySingleOrDefault<string>(Sql);
             }
@@ -76,7 +76,7 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
 
             string[] listings = Directory.GetFiles(FolderPath, "*.pdf", SearchOption.TopDirectoryOnly);
 
-            foreach(var filename in listings)
+            foreach (var filename in listings)
             {
                 instructionSheets.Add(new InstructionSheet(Path.GetFileNameWithoutExtension(filename)));
             }
@@ -123,6 +123,23 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
             var ext = Path.GetExtension(path).ToLowerInvariant();
 
             return types[ext];
+        }
+
+        public bool VerifyTokenValues(string itemNo, string orderNo, string postalCode)
+        {
+            string verifiedItemNo;
+
+            string Sql =  "SELECT IM.ITEMNO FROM ORDERDETL OD INNER JOIN ORDERHEADER OH ON OD.ORDERNO = OH.ORDERNO " +
+                          "INNER JOIN CUSTOMERS CUST ON OH.CUSTEDP = CUST.CUST_EDP " + 
+                          "INNER JOIN ITEMMAST IM ON OD.EDPNO = IM.EDPNO " +
+                         $"WHERE(IM.ITEMNO = '{itemNo}') AND (OD.ORDERNO = '{orderNo}') AND (CUST.ZIP = '{postalCode}')";
+
+            using (SqlConnection conn = new SqlConnection(_connStringEDW))
+            {
+                verifiedItemNo = conn.QuerySingleOrDefault<string>(Sql);
+            }
+
+            return verifiedItemNo != null;
         }
     }
 }
