@@ -7,7 +7,7 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
 {
     public class TokenManager
     {
-        public static (bool FormatOk, string ItemNo, string OrderNo, string PostalCode, string Payload) DecodeToken(string token)
+        public static (bool FormatOk, string ItemNo, string OrderNo, string PostalCode, string Schema) DecodeToken(string token)
         {
 
             bool formatOk = true;
@@ -56,7 +56,7 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
                 formatOk = false;
             }
 
-            return (FormatOk: formatOk, ItemNo: itemNo, OrderNo: orderNo, PostalCode: postalCode, Payload: plainText);
+            return (FormatOk: formatOk, ItemNo: itemNo, OrderNo: orderNo, PostalCode: postalCode, Schema: schema);
         }
 
         public static string EncodeToken(params string[] args)

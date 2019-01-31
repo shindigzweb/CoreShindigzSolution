@@ -46,6 +46,8 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets
         //}
         public IActionResult OnGetDownload(string token)
         {
+            string filename = null;
+
             if (token == null)
                 return NotFound();
 
@@ -54,15 +56,24 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets
 
             if (result.FormatOk)
             {
-                bool isVerified = _repo.VerifyTokenValues(result.ItemNo, result.OrderNo, result.PostalCode);
-
-                if (isVerified)
+                if(result.Schema == "IXX")
                 {
-                    string filename = _repo.GetFileNameForItem(result.ItemNo);
-
-                    if(filename != null)
-                    return _repo.GetFile(filename);
+                    filename = _repo.GetFileNameForItem(result.ItemNo);
                 }
+                else
+                {
+                    // Does not really belong in REPO but form now to keep things simple
+                    bool isVerified = _repo.VerifyTokenValues(result.ItemNo, result.OrderNo, result.PostalCode);
+
+                    if (isVerified)
+                    {
+                        filename = _repo.GetFileNameForItem(result.ItemNo);
+                     
+                    }
+                }
+
+                if (filename != null)
+                    return _repo.GetFile(filename);
             }
 
             return NotFound();
