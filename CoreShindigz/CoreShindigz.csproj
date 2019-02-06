@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Areas\Api\Pages\InstructionSheets\_ListForOrder.cshtml" />
+    <None Include="Areas\Api\Pages\Shared\_ListForOrder.cshtml" />
   </ItemGroup>
 
 </Project>
