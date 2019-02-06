@@ -2,32 +2,58 @@
 @model CoreShindigz.Areas.Api.Pages.InstructionSheets.IndexModel
 @using CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
 
-@{ 
-    Layout = "_Layout";
 
-    string cryptostringGood = TokenManager.EncodeToken("IOP", "CTPCBW", "Z1801824", "30354");
+@{
+    if (Model.PageMode == CoreShindigz.Areas.Api.Pages.InstructionSheets.PageModes.notfound)
+    {
+        Layout = "_ListforOrder";
 
-    string cryptostringBad = TokenManager.EncodeToken("IOP", "CTPCBW", "Z1801823", "30354");
+        <h2>No assets found</h2>
+    }
 
 
+    if (Model.PageMode == CoreShindigz.Areas.Api.Pages.InstructionSheets.PageModes.dev)
+    {
+        Layout = "_Layout";
 
-    string cryptotemp;
+        string cryptotemp;
+
+        <h2>Instruction Sheets</h2>
+
+        <a target="_new" href="~/api/instructionsheets/list/OPX|Z1885948|60647"> List for order Z1885948 (2 items) </a> <br />
+        <a target="_new" href="~/api/instructionsheets/list/OPX|Z1885965|070181107"> List for order Z1885965 (1 item) </a> <br />
+        <a target="_new" href="~/api/instructionsheets/list/OPX|W4231143|72716"> List for order W4231143 (0 item) </a> <br />
+
+
+        <text><br /> Folder: @Model.FolderLocation </text>
+
+        <hr />
+        <ul>
+            @foreach (var instructionSheet in Model.InstructionSheets)
+            {
+
+                cryptotemp = TokenManager.EncodeToken("IXX", System.IO.Path.GetFileNameWithoutExtension(instructionSheet.FileName));
+
+                <li>@instructionSheet.FileName = <a target="_new" href="/api/instructionsheets/download/@cryptotemp"> @cryptotemp  </a></li>
+            }
+        </ul>
+    }
+
+    if (Model.PageMode == CoreShindigz.Areas.Api.Pages.InstructionSheets.PageModes.listfororder)
+    {
+        Layout = "_ListforOrder";
+
+        <h2>Instruction Sheets for Order @Model.OrderNo</h2>
+
+        <ul>
+            @foreach (var asset in Model.InstructionSheetAssets)
+            {
+                string cryptotemp = TokenManager.EncodeToken("IOP", asset.ItemNo, Model.OrderNo, Model.PostalCode);
+
+                <li> @asset.ItemNo : @asset.Description <a href="~/api/instructionsheets/download/@cryptotemp" target="_new">download</a></li>
+            }
+        </ul>
+    }
 }
 
-<h2>Instruction Sheets</h2>
 
-Folder: @Model.FolderLocation <br />
-
-<a href="~/api/instructionsheets/download/@cryptostringGood"> cryptstringGood </a> <br />
-
-<a href="~/api/instructionsheets/download/@cryptostringBad"> cryptostringBad </a> <br />
-
-<ul>
-       @foreach (var instructionSheet in Model.InstructionSheets)
-       {
-           
-            cryptotemp = TokenManager.EncodeToken("IXX", instructionSheet.FileName,"Z12345678","46804");
-           
-           <li>@instructionSheet.FileName.@instructionSheet.Ext = <a target="_new" href="/api/instructionsheets/download/@cryptotemp"> @cryptotemp  </a></li>
-       }
-</ul>

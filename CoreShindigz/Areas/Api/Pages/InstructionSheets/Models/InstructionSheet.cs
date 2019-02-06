@@ -20,7 +20,7 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
         public InstructionSheet(string filename = "")
         {
             FileName = filename;
-            Ext = "pdf";
+            Ext = Path.GetExtension(filename);
         }
 
         

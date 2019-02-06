@@ -13,7 +13,7 @@ namespace CoreShindigz.Pages
     {
         public void OnGet()
         {
-
+            Page();
         }
     }
 }

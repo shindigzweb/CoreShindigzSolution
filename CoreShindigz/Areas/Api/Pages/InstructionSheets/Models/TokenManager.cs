@@ -45,6 +45,15 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
                         else
                             formatOk = false;
                         break;
+                    case "OPX":
+                        if(args.Length > 2)
+                        {
+                            orderNo = args[1];
+                            postalCode = args[2];
+                        }
+                        else
+                            formatOk = false;
+                        break;
                     default:
                         formatOk = false;
                         break;

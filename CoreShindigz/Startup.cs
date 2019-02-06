@@ -61,18 +61,14 @@ namespace CoreShindigz
             //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-
             app.UseAuthentication();
+            //app.UseMvc();
 
-            app.UseMvc();
-
-            //app.UseMvc(routes =>
-            //    {
-            //        routes.MapRoute(name: "default", template: "{area:exists}/{controller=Home}/{action=Index}/{Id?}");
-
-                    
-            //    }
-            //);
+            app.UseMvc(routes =>
+                {
+                    routes.MapRoute(name: "default", template: "{area:exists}/{controller=home}/{action=index}/{id?}");
+                }
+            );
         }
     }
 }

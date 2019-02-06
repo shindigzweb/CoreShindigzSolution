@@ -6,19 +6,37 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration;
 using CoreShindigz.Areas.Api.Pages.InstructionSheets.Models;
 
+/// <summary>
+/// All of Instruction sheet logic is handled by this page.
+/// No repo's are injected. in stead we initialize them in the constructor
+/// </summary>
 namespace CoreShindigz.Areas.Api.Pages.InstructionSheets
 {
+    public enum PageModes { dev, listfororder, notfound }
+        
+
     public class IndexModel : PageModel
     {
-        public IndexModel(InstructionSheetRepository repo)
-        {
-            _repo = repo;
-        }
         private InstructionSheetRepository _repo;
-        public string FolderLocation; 
+        private OrderRepository _orderRepo;
+        
+        public string FolderLocation;
         public List<InstructionSheet> InstructionSheets;
+        public List<InstructionSheetAsset> InstructionSheetAssets;
+        public PageModes PageMode;
+        public string OrderNo = "";
+        public string PostalCode = "";
+
+        public IndexModel(IConfiguration configuration)
+        {
+            _repo = new InstructionSheetRepository(configuration);
+            _orderRepo = new OrderRepository(configuration);
+            PageMode = PageModes.dev;
+        }
+        
      
         public void OnGet()
         {
@@ -28,22 +46,6 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets
             Page();
         }
 
-        //public async Task<IActionResult> OnGetDownload(string itemno)
-        //{
-        //    if (itemno == null)
-        //        return Content("itemno not defined");
-
-        //    var memory = new MemoryStream();
-        //    var path = $@"{InstructionSheet.FolderPath}\{itemno}.pdf";
-
-        //    using(var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
-        //    {
-        //        await stream.CopyToAsync(memory);
-        //    }
-        //    memory.Position = 0;
-
-        //    return File(memory, InstructionSheet.GetContentType(path), $"Instructions for {itemno}");
-        //}
         public IActionResult OnGetDownload(string token)
         {
             string filename = null;
@@ -78,5 +80,50 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets
 
             return NotFound();
         }
+
+        public void OnGetList(string token)
+        {
+            // token = OPX|ORDERNO|POSTALCODE
+            string orderNo;
+            string postalCode;
+            var tokenArgs = token.Split('|');
+
+            if (tokenArgs.Length < 3)
+            {
+                PageMode = PageModes.notfound;
+                Page();
+                return;
+            }
+            else
+            {
+                orderNo = tokenArgs[1];
+                postalCode = tokenArgs[2];
+            }
+
+            // is orderno and postalcode combination correct
+            if (!_orderRepo.IsRequestLegit(orderNo, postalCode))
+            {
+                PageMode = PageModes.notfound;
+                Page();
+                return;
+            }
+
+            // do we have instruction sheet assets for this order
+            this.OrderNo = orderNo;
+            this.PostalCode = postalCode;
+            this.InstructionSheetAssets = _orderRepo.GetInstructionSheets(orderNo);
+
+            if(this.InstructionSheetAssets.Count == 0)
+            {
+                this.PageMode = PageModes.notfound;
+                Page();
+                return;
+            }
+
+            this.PageMode = PageModes.listfororder;
+            Page();
+        }
+
+        
     }
 }

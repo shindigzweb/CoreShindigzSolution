@@ -41,14 +41,19 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
         {
             var itemno = Path.GetFileNameWithoutExtension(filename);
 
-            var Sql = "UPDATE ITEMMASTPLUS SET INSTRSHEETFILENAME = '" + filename + "'" +
-                      "WHERE LEFT(ITEMNO,CHARINDEX(' ',ITEMNO)) = '" + itemno + "'" +
-                      "AND INSTRSHEETFILENAME IS NULL";
-
-            using (SqlConnection conn = new SqlConnection(_connStringEDW))
+            if(filename.Length < 26)
             {
-                return conn.Execute(Sql);
+                var Sql = "UPDATE ITEMMASTPLUS SET INSTRSHEETFILENAME = '" + filename + "'" +
+                          "WHERE LEFT(ITEMNO,CHARINDEX(' ',ITEMNO)) = '" + itemno + "'" +
+                          "AND INSTRSHEETFILENAME IS NULL";
+
+                using (SqlConnection conn = new SqlConnection(_connStringEDW))
+                {
+                    return conn.Execute(Sql);
+                }
             }
+
+            return 0;
         }
 
         /// <summary>
@@ -74,11 +79,11 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
         {
             var instructionSheets = new List<InstructionSheet>();
 
-            string[] listings = Directory.GetFiles(FolderPath, "*.pdf", SearchOption.TopDirectoryOnly);
+            string[] listings = Directory.GetFiles(FolderPath, "*", SearchOption.TopDirectoryOnly);
 
             foreach (var filename in listings)
             {
-                instructionSheets.Add(new InstructionSheet(Path.GetFileNameWithoutExtension(filename)));
+                instructionSheets.Add(new InstructionSheet(Path.GetFileName(filename)));
             }
 
             return instructionSheets;
@@ -128,15 +133,16 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
         public bool VerifyTokenValues(string itemNo, string orderNo, string postalCode)
         {
             string verifiedItemNo;
+            string postalCode5 = postalCode.Substring(0, 5);
 
-            string Sql =  "SELECT IM.ITEMNO FROM ORDERDETL OD INNER JOIN ORDERHEADER OH ON OD.ORDERNO = OH.ORDERNO " +
-                          "INNER JOIN CUSTOMERS CUST ON OH.CUSTEDP = CUST.CUST_EDP " + 
-                          "INNER JOIN ITEMMAST IM ON OD.EDPNO = IM.EDPNO " +
-                         $"WHERE(IM.ITEMNO = '{itemNo}') AND (OD.ORDERNO = '{orderNo}') AND (CUST.ZIP = '{postalCode}')";
+            string Sql = "SELECT IM.ITEMNO FROM ORDERDETL OD INNER JOIN ORDERHEADER OH ON OD.ORDERNO = OH.ORDERNO " +
+                         "INNER JOIN CUSTOMERS CUST ON OH.CUSTEDP = CUST.CUST_EDP " + 
+                         "INNER JOIN ITEMMAST IM ON OD.EDPNO = IM.EDPNO " +
+                         "WHERE(IM.ITEMNO = @itemNo) AND (OD.ORDERNO = @orderNo) AND (LEFT(CUST.ZIP,5) = @postalCode)";
 
             using (SqlConnection conn = new SqlConnection(_connStringEDW))
             {
-                verifiedItemNo = conn.QuerySingleOrDefault<string>(Sql);
+                verifiedItemNo = conn.QuerySingleOrDefault<string>(Sql,new {itemNo, orderNo, @postalCode = postalCode5 });
             }
 
             return verifiedItemNo != null;
