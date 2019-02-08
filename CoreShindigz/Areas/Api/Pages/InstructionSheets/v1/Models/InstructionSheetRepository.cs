@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Dapper;
 
-namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
+namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.v1.Models
 {
     /// <summary>
     /// The Instruction Sheet Repository

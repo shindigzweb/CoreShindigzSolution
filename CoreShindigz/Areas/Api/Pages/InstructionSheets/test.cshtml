@@ -1,0 +1,29 @@
+﻿@page
+@model CoreShindigz.Areas.Api.Pages.InstructionSheets.testModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using CoreShindigz.Areas.Api.Pages.InstructionSheets.v1.Models;
+@{
+    Layout = "_Layout";
+    string cryptotemp;
+}
+
+<h2>Instruction Sheets Test Page</h2>
+
+<a target="_new" href="~/api/instructionsheets/v1/list/OPX|Z1885948|60647"> List for order Z1885948 (2 items) </a> <br />
+<a target="_new" href="~/api/instructionsheets/v1/list/OPX|Z1885965|070181107"> List for order Z1885965 (1 item) </a> <br />
+<a target="_new" href="~/api/instructionsheets/v1/list/OPX|W4231143|72716"> List for order W4231143 (0 item) </a> <br />
+
+
+<text><br /> Folder: @Model.FolderLocation </text>
+
+<hr />
+
+<ul>
+    @foreach (var instructionSheet in Model.InstructionSheets)
+    {
+        cryptotemp = TokenManager.EncodeToken("IXX", System.IO.Path.GetFileNameWithoutExtension(instructionSheet.FileName));
+
+        <li>@instructionSheet.FileName = <a target="_blank" asp-page="v1/download" asp-route-token="@cryptotemp"> @cryptotemp </a> 
+    </li>
+    }
+</ul>

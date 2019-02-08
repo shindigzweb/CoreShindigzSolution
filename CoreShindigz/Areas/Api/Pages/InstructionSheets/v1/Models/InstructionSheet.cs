@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
+namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.v1.Models
 {
     public class InstructionSheet
     {

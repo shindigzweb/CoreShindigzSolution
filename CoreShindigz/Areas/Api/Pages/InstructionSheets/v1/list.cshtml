@@ -1,0 +1,36 @@
+﻿@page "{token?}"
+@model CoreShindigz.Areas.Api.Pages.InstructionSheets.v1.ListModel
+@using CoreShindigz.Areas.Api.Pages.InstructionSheets.v1.Models
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    Layout = "_Bare";
+    ViewData["Title"] = "List Assets";
+}
+
+@if (Model.InstructionSheetAssets.Count < 1)
+{
+    <h2>No Assets Found</h2>
+
+    @Model.Message
+}
+else
+{
+    <h2>Assets For Order @Model.OrderNo</h2>
+
+    <text>Please select your instruction sheet from the following: </text> 
+
+    <hr />
+
+    <ul>
+        @foreach (var asset in Model.InstructionSheetAssets)
+        {
+            string cryptotemp = TokenManager.EncodeToken("IOP", asset.ItemNo, Model.OrderNo, Model.PostalCode);
+
+            <li>
+                @asset.ItemNo : @asset.Description <a asp-page="download" asp-route-token="@cryptotemp"> download</a>
+            </li>
+        }
+    </ul>
+}
+

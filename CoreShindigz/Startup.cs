@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using CoreShindigz.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using CoreShindigz.Areas.Api.Pages.InstructionSheets.Models;
+using CoreShindigz.Areas.Api.Pages.InstructionSheets.v1.Models;
 
 namespace CoreShindigz
 {

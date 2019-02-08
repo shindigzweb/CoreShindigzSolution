@@ -4,10 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using System.Data.SqlClient;
-using CoreShindigz.Areas.Api.Pages.InstructionSheets.Models;
 using Dapper;
 
-namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.Models
+namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.v1.Models
 {
     public class OrderRepository
     {
