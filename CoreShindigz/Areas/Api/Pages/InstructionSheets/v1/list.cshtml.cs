@@ -14,7 +14,7 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.v1
         public List<InstructionSheetAsset> InstructionSheetAssets { get; set; } = new List<InstructionSheetAsset>();
         public string OrderNo { get; set; } = "";
         public string PostalCode { get; set; } = "";
-        public string Message { get; set; } = "default";
+        public string Message { get; set; } = "";
         private OrderRepository _orderRepo;
 
         public ListModel(IConfiguration configuration)
@@ -31,6 +31,7 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.v1
 
             if (tokenArgs.Length < 3)
             {
+                Message = "Incorrect data.";
                 Page();
                 return;
             }
@@ -43,6 +44,7 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.v1
             // is orderno and postalcode combination correct
             if (!_orderRepo.IsRequestLegit(orderNo, postalCode))
             {
+                Message = "Invalid data.";
                 Page();
                 return;
             }
@@ -51,6 +53,11 @@ namespace CoreShindigz.Areas.Api.Pages.InstructionSheets.v1
             this.OrderNo = orderNo;
             this.PostalCode = postalCode;
             this.InstructionSheetAssets = _orderRepo.GetInstructionSheets(orderNo);
+
+            if(InstructionSheetAssets.Count < 1)
+            {
+                Message = "No instruction sheets listed for any item on this order";
+            }
 
             Page();
         }
