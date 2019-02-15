@@ -1,7 +1,9 @@
 ﻿@page
-@model CoreShindigz.Areas.Api.Pages.InstructionSheets.testModel
+@model CoreShindigz.Areas.Api.Pages.InstructionSheets.TestModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
 @using CoreShindigz.Areas.Api.Pages.InstructionSheets.v1.Models;
+
 @{
     Layout = "_Layout";
     string cryptotemp;
@@ -14,7 +16,7 @@
 <a target="_new" href="~/api/instructionsheets/v1/list/OPX|W4231143|72716"> List for order W4231143 (0 item) </a> <br />
 
 
-<text><br /> Folder: @Model.FolderLocation </text>
+<br /><text> Folder: @Model.FolderLocation </text>
 
 <hr />
 
